@@ -1,5 +1,4 @@
-# CSV書き込み部分のコード修正, a~fの評価データを配列じゃなくする
-# SQL書き込み部分のコード追加
+# -*- coding: utf-8 -*-
 from selenium import webdriver
 from selenium.webdriver.common.keys import Keys
 from selenium.webdriver.support.ui import Select
@@ -11,11 +10,18 @@ import os
 
 target_url='https://duet.doshisha.ac.jp/kokai/html/fi/fi020/FI02001G.html'
 # 対象年度の指定
-target_year = '2018'
+print('Please type which year, such as 2018, 2017 or something like that.')
+string = input()
+target_year = string
 value_to_name = {'01':'神学部', '02':'文学部', '03':'法学部', '04':'経済学部', '05':'商学部', '07':'政策学部', '08':'文化情報学部', '09':'社会学部', '14':'生命医科学部', '15':'スポーツ健康科学部', '16':'理工学部', '17':'心理学部', '19':'グローバルコミュニケーション学部', '22':'グローバル地域文化学部', '60':'一般教養科目', '61':'保健体育科目', '65':'外国語科目'}
-target_course_value = '01'
+print('Here is a list of combinations of a value and a faculty name.')
+for value in value_to_name:
+    print(value+':'+value_to_name[value])
+print('Please type a value of a faculty.')
+string = input()
+target_course_value = string
 subject_codes = []
-# テーブル名を手動で変更する必要がある. 神学部ならtheologyに.
+# SQL生成用の文字列
 table = 'INSERT INTO `LAA1138458-subjectsdata`.`theology`'
 column = '(`code`, `semester`, `name`, `teacher`, `registers`, `a`, `b`, `c`, `d`, `f`) VALUES '
 
@@ -51,27 +57,27 @@ try:
             subject_other = driver.find_element_by_xpath('//*[@id="form1"]/span/div/div/table[1]/tbody/tr['+str(i)+']/td[11]').text
             subject_recave = driver.find_element_by_xpath('//*[@id="form1"]/span/div/div/table[1]/tbody/tr['+str(i)+']/td[12]').text
             # 取得したデータをcsvファイルに書き込み
-            if not os.path.isfile('Desktop/DoshishaSubject/SubjectData/CSV/'+target_year+'/'+value_to_name[target_course_value]+target_year+'.csv'):
+            if not os.path.isfile(os.path.dirname(__file__)+'/CSV/'+target_year+'/'+value_to_name[target_course_value]+target_year+'.csv'):
                 # ファイルがなければ新規書き込み
                 print('New CSV file.')
-                with open('Desktop/DoshishaSubject/SubjectData/CSV/'+target_year+'/'+value_to_name[target_course_value]+target_year+'.csv', 'w') as f:
+                with open(os.path.dirname(__file__)+'/CSV/'+target_year+'/'+value_to_name[target_course_value]+target_year+'.csv', 'w') as f:
                     writer = csv.writer(f)
                     writer.writerow([subject_code, semester, subject_name, subject_teacher, subject_registers, subject_a, subject_b, subject_c, subject_d, subject_f, subject_other, subject_recave])
             else:
                 # ファイルがあれば追記
-                with open('Desktop/DoshishaSubject/SubjectData/CSV/'+target_year+'/'+value_to_name[target_course_value]+target_year+'.csv', 'a') as f:
+                with open(os.path.dirname(__file__)+'/CSV/'+target_year+'/'+value_to_name[target_course_value]+target_year+'.csv', 'a') as f:
                     writer = csv.writer(f)
                     writer.writerow([subject_code, semester, subject_name, subject_teacher, subject_registers, subject_a, subject_b, subject_c, subject_d, subject_f, subject_other, subject_recave])
             # 取得したデータを用いてSQL書き込み
-            if not os.path.isfile('Desktop/DoshishaSubject/SubjectData/SQL/'+target_year+'/'+value_to_name[target_course_value]+target_year+'.txt'):
+            if not os.path.isfile(os.path.dirname(__file__)+'/SQL/'+target_year+'/'+value_to_name[target_course_value]+target_year+'.txt'):
                 # ファイルがなければ新規書き込み
                 print('New SQL file.')
-                with open('Desktop/DoshishaSubject/SubjectData/SQL/'+target_year+'/'+value_to_name[target_course_value]+target_year+'.txt', 'w') as f:
+                with open(os.path.dirname(__file__)+'/SQL/'+target_year+'/'+value_to_name[target_course_value]+target_year+'.txt', 'w') as f:
                     values = "('"+subject_code+"','"+semester+"','"+subject_name+"','"+subject_teacher+"','"+subject_registers+"','"+subject_a+"','"+subject_b+"','"+subject_c+"','"+subject_d+"','"+subject_f+"');"
                     f.write(table+ column + values + '\n')
             else:
                 # ファイルがあれば追記
-                with open('Desktop/DoshishaSubject/SubjectData/SQL/'+target_year+'/'+value_to_name[target_course_value]+target_year+'.txt', 'a') as f:
+                with open(os.path.dirname(__file__)+'/SQL/'+target_year+'/'+value_to_name[target_course_value]+target_year+'.txt', 'a') as f:
                     values = "('"+subject_code+"','"+semester+"','"+subject_name+"','"+subject_teacher+"','"+subject_registers+"','"+subject_a+"','"+subject_b+"','"+subject_c+"','"+subject_d+"','"+subject_f+"');"
                     f.write(table+ column + values + '\n')
         # 次ページへ移る
@@ -103,11 +109,11 @@ try:
             subject_other = driver.find_element_by_xpath('//*[@id="form1"]/span/div/div/table[1]/tbody/tr['+str(i)+']/td[11]').text
             subject_recave = driver.find_element_by_xpath('//*[@id="form1"]/span/div/div/table[1]/tbody/tr['+str(i)+']/td[12]').text
             # 取得したデータをcsvファイルに書き込み
-            with open('Desktop/DoshishaSubject/SubjectData/CSV/'+target_year+'/'+value_to_name[target_course_value]+target_year+'.csv', 'a') as f:
+            with open(os.path.dirname(__file__)+'/CSV/'+target_year+'/'+value_to_name[target_course_value]+target_year+'.csv', 'a') as f:
                     writer = csv.writer(f)
                     writer.writerow([subject_code, semester, subject_name, subject_teacher, subject_registers, subject_a, subject_b, subject_c, subject_d, subject_f, subject_other, subject_recave])
             # 取得したデータを用いてSQL書き込み
-            with open('Desktop/DoshishaSubject/SubjectData/SQL/'+target_year+'/'+value_to_name[target_course_value]+target_year+'.txt', 'a') as f:
+            with open(os.path.dirname(__file__)+'/SQL/'+target_year+'/'+value_to_name[target_course_value]+target_year+'.txt', 'a') as f:
                     values = "('"+subject_code+"','"+semester+"','"+subject_name+"','"+subject_teacher+"','"+subject_registers+"','"+subject_a+"','"+subject_b+"','"+subject_c+"','"+subject_d+"','"+subject_f+"');"
                     f.write(table+ column + values + '\n')
 except NoSuchElementException:
