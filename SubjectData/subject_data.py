@@ -23,7 +23,7 @@ target_course_value = string
 subject_codes = []
 # SQL生成用の文字列
 table = 'INSERT INTO `LAA1138458-subjectsdata`.`theology`'
-column = '(`code`, `semester`, `name`, `teacher`, `registers`, `a`, `b`, `c`, `d`, `f`) VALUES '
+column = '(`code`, `semester`, `name`, `registers`, `a`, `b`, `c`, `d`, `f`, `get_point`) VALUES '
 
 driver = webdriver.Safari()
 
@@ -47,7 +47,6 @@ try:
             subject_code = driver.find_element_by_xpath('//*[@id="form1"]/span/div/div/table[1]/tbody/tr['+str(i)+']/td[1]').text
             semester = driver.find_element_by_xpath('//*[@id="form1"]/span/div/div/table[1]/tbody/tr['+str(i)+']/td[2]').text
             subject_name = driver.find_element_by_xpath('//*[@id="form1"]/span/div/div/table[1]/tbody/tr['+str(i)+']/td[3]').text
-            subject_teacher = driver.find_element_by_xpath('//*[@id="form1"]/span/div/div/table[1]/tbody/tr['+str(i)+']/td[4]').text.replace(' ','').replace('\n','')
             subject_registers = driver.find_element_by_xpath('//*[@id="form1"]/span/div/div/table[1]/tbody/tr['+str(i)+']/td[5]').text
             subject_a = driver.find_element_by_xpath('//*[@id="form1"]/span/div/div/table[1]/tbody/tr['+str(i)+']/td[6]').text
             subject_b = driver.find_element_by_xpath('//*[@id="form1"]/span/div/div/table[1]/tbody/tr['+str(i)+']/td[7]').text
@@ -56,29 +55,43 @@ try:
             subject_f = driver.find_element_by_xpath('//*[@id="form1"]/span/div/div/table[1]/tbody/tr['+str(i)+']/td[10]').text
             subject_other = driver.find_element_by_xpath('//*[@id="form1"]/span/div/div/table[1]/tbody/tr['+str(i)+']/td[11]').text
             subject_recave = driver.find_element_by_xpath('//*[@id="form1"]/span/div/div/table[1]/tbody/tr['+str(i)+']/td[12]').text
+
+            if subject_a == '' :
+                subject_a = '0'
+            if subject_b == '' :
+                subject_b = '0'
+            if subject_c == '' :
+                subject_c = '0'
+            if subject_d == '' :
+                subject_d = '0'
+            if subject_f == '' :
+                subject_f = '0'
+
+            subject_get_point = float(subject_a) + float(subject_b) + float(subject_c) + float(subject_d)
+            subject_get_point = str(subject_get_point)
             # 取得したデータをcsvファイルに書き込み
             if not os.path.isfile(os.path.dirname(__file__)+'/CSV/'+target_year+'/'+value_to_name[target_course_value]+target_year+'.csv'):
                 # ファイルがなければ新規書き込み
                 print('New CSV file.')
                 with open(os.path.dirname(__file__)+'/CSV/'+target_year+'/'+value_to_name[target_course_value]+target_year+'.csv', 'w') as f:
                     writer = csv.writer(f)
-                    writer.writerow([subject_code, semester, subject_name, subject_teacher, subject_registers, subject_a, subject_b, subject_c, subject_d, subject_f, subject_other, subject_recave])
+                    writer.writerow([subject_code, semester, subject_name, subject_registers, subject_a, subject_b, subject_c, subject_d, subject_f, subject_other, subject_recave])
             else:
                 # ファイルがあれば追記
                 with open(os.path.dirname(__file__)+'/CSV/'+target_year+'/'+value_to_name[target_course_value]+target_year+'.csv', 'a') as f:
                     writer = csv.writer(f)
-                    writer.writerow([subject_code, semester, subject_name, subject_teacher, subject_registers, subject_a, subject_b, subject_c, subject_d, subject_f, subject_other, subject_recave])
+                    writer.writerow([subject_code, semester, subject_name, subject_registers, subject_a, subject_b, subject_c, subject_d, subject_f, subject_other, subject_recave])
             # 取得したデータを用いてSQL書き込み
             if not os.path.isfile(os.path.dirname(__file__)+'/SQL/'+target_year+'/'+value_to_name[target_course_value]+target_year+'.txt'):
                 # ファイルがなければ新規書き込み
                 print('New SQL file.')
                 with open(os.path.dirname(__file__)+'/SQL/'+target_year+'/'+value_to_name[target_course_value]+target_year+'.txt', 'w') as f:
-                    values = "('"+subject_code+"','"+semester+"','"+subject_name+"','"+subject_teacher+"','"+subject_registers+"','"+subject_a+"','"+subject_b+"','"+subject_c+"','"+subject_d+"','"+subject_f+"');"
+                    values = "('"+subject_code+"','"+semester+"','"+subject_name+"','"+subject_registers+"','"+subject_a+"','"+subject_b+"','"+subject_c+"','"+subject_d+"','"+subject_f+"','"+subject_get_point+"');"
                     f.write(table+ column + values + '\n')
             else:
                 # ファイルがあれば追記
                 with open(os.path.dirname(__file__)+'/SQL/'+target_year+'/'+value_to_name[target_course_value]+target_year+'.txt', 'a') as f:
-                    values = "('"+subject_code+"','"+semester+"','"+subject_name+"','"+subject_teacher+"','"+subject_registers+"','"+subject_a+"','"+subject_b+"','"+subject_c+"','"+subject_d+"','"+subject_f+"');"
+                    values = "('"+subject_code+"','"+semester+"','"+subject_name+"','"+subject_registers+"','"+subject_a+"','"+subject_b+"','"+subject_c+"','"+subject_d+"','"+subject_f+"','"+subject_get_point+"');"
                     f.write(table+ column + values + '\n')
         # 次ページへ移る
         # 最初のページの場合
@@ -99,7 +112,6 @@ try:
             subject_code = driver.find_element_by_xpath('//*[@id="form1"]/span/div/div/table[1]/tbody/tr['+str(i)+']/td[1]').text
             semester = driver.find_element_by_xpath('//*[@id="form1"]/span/div/div/table[1]/tbody/tr['+str(i)+']/td[2]').text
             subject_name = driver.find_element_by_xpath('//*[@id="form1"]/span/div/div/table[1]/tbody/tr['+str(i)+']/td[3]').text
-            subject_teacher = driver.find_element_by_xpath('//*[@id="form1"]/span/div/div/table[1]/tbody/tr['+str(i)+']/td[4]').text.replace(' ','').replace('\n','')
             subject_registers = driver.find_element_by_xpath('//*[@id="form1"]/span/div/div/table[1]/tbody/tr['+str(i)+']/td[5]').text
             subject_a = driver.find_element_by_xpath('//*[@id="form1"]/span/div/div/table[1]/tbody/tr['+str(i)+']/td[6]').text
             subject_b = driver.find_element_by_xpath('//*[@id="form1"]/span/div/div/table[1]/tbody/tr['+str(i)+']/td[7]').text
@@ -108,13 +120,14 @@ try:
             subject_f = driver.find_element_by_xpath('//*[@id="form1"]/span/div/div/table[1]/tbody/tr['+str(i)+']/td[10]').text
             subject_other = driver.find_element_by_xpath('//*[@id="form1"]/span/div/div/table[1]/tbody/tr['+str(i)+']/td[11]').text
             subject_recave = driver.find_element_by_xpath('//*[@id="form1"]/span/div/div/table[1]/tbody/tr['+str(i)+']/td[12]').text
+            subject_get_point = subject_a + subject_b + subject_c + subject_d
             # 取得したデータをcsvファイルに書き込み
             with open(os.path.dirname(__file__)+'/CSV/'+target_year+'/'+value_to_name[target_course_value]+target_year+'.csv', 'a') as f:
                     writer = csv.writer(f)
-                    writer.writerow([subject_code, semester, subject_name, subject_teacher, subject_registers, subject_a, subject_b, subject_c, subject_d, subject_f, subject_other, subject_recave])
+                    writer.writerow([subject_code, semester, subject_name, subject_registers, subject_a, subject_b, subject_c, subject_d, subject_f, subject_other, subject_recave])
             # 取得したデータを用いてSQL書き込み
             with open(os.path.dirname(__file__)+'/SQL/'+target_year+'/'+value_to_name[target_course_value]+target_year+'.txt', 'a') as f:
-                    values = "('"+subject_code+"','"+semester+"','"+subject_name+"','"+subject_teacher+"','"+subject_registers+"','"+subject_a+"','"+subject_b+"','"+subject_c+"','"+subject_d+"','"+subject_f+"');"
+                    values = "('"+subject_code+"','"+semester+"','"+subject_name+"','"+subject_registers+"','"+subject_a+"','"+subject_b+"','"+subject_c+"','"+subject_d+"','"+subject_f+"','"+subject_get_point+"');"
                     f.write(table+ column + values + '\n')
 except NoSuchElementException:
     print('No such element.')
