@@ -13,7 +13,7 @@ target_url='https://duet.doshisha.ac.jp/kokai/html/fi/fi020/FI02001G.html'
 print('Please type which year, such as 2018, 2017 or something like that.')
 string = input()
 target_year = string
-value_to_name = {'01':'神学部', '02':'文学部', '03':'法学部', '04':'経済学部', '05':'商学部', '07':'政策学部', '08':'文化情報学部', '09':'社会学部', '14':'生命医科学部', '15':'スポーツ健康科学部', '16':'理工学部', '17':'心理学部', '19':'グローバルコミュニケーション学部', '22':'グローバル地域文化学部', '60':'一般教養科目', '61':'保健体育科目', '65':'外国語科目'}
+value_to_name = {'01':'theology', '02':'literature', '03':'law', '04':'economics', '05':'commerce', '07':'policy', '08':'culture_info', '09':'social', '14':'biology', '15':'sport', '16':'engineering', '17':'psychology', '19':'glo_com', '22':'glo_region', '60':'general', '61':'health', '65':'language'}
 print('Here is a list of combinations of a value and a faculty name.')
 for value in value_to_name:
     print(value+':'+value_to_name[value])
@@ -22,7 +22,8 @@ string = input()
 target_course_value = string
 subject_codes = []
 # SQL生成用の文字列
-table = 'INSERT INTO `LAA1138458-subjectsdata`.`theology`'
+table = 'INSERT INTO `LAA1138458-subjectsdata`.'
+faculty = '`'+ value_to_name[target_course_value] +'`'
 column = '(`code`, `semester`, `name`, `registers`, `a`, `b`, `c`, `d`, `f`, `get_point`) VALUES '
 
 driver = webdriver.Safari()
@@ -87,12 +88,12 @@ try:
                 print('New SQL file.')
                 with open(os.path.dirname(__file__)+'/SQL/'+target_year+'/'+value_to_name[target_course_value]+target_year+'.txt', 'w') as f:
                     values = "('"+subject_code+"','"+semester+"','"+subject_name+"','"+subject_registers+"','"+subject_a+"','"+subject_b+"','"+subject_c+"','"+subject_d+"','"+subject_f+"','"+subject_get_point+"');"
-                    f.write(table+ column + values + '\n')
+                    f.write(table+faculty+column + values + '\n')
             else:
                 # ファイルがあれば追記
                 with open(os.path.dirname(__file__)+'/SQL/'+target_year+'/'+value_to_name[target_course_value]+target_year+'.txt', 'a') as f:
                     values = "('"+subject_code+"','"+semester+"','"+subject_name+"','"+subject_registers+"','"+subject_a+"','"+subject_b+"','"+subject_c+"','"+subject_d+"','"+subject_f+"','"+subject_get_point+"');"
-                    f.write(table+ column + values + '\n')
+                    f.write(table+faculty+ column + values + '\n')
         # 次ページへ移る
         # 最初のページの場合
         if page == 1:
@@ -128,7 +129,7 @@ try:
             # 取得したデータを用いてSQL書き込み
             with open(os.path.dirname(__file__)+'/SQL/'+target_year+'/'+value_to_name[target_course_value]+target_year+'.txt', 'a') as f:
                     values = "('"+subject_code+"','"+semester+"','"+subject_name+"','"+subject_registers+"','"+subject_a+"','"+subject_b+"','"+subject_c+"','"+subject_d+"','"+subject_f+"','"+subject_get_point+"');"
-                    f.write(table+ column + values + '\n')
+                    f.write(table+faculty+ column + values + '\n')
 except NoSuchElementException:
     print('No such element.')
 finally:
