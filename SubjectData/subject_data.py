@@ -23,7 +23,7 @@ target_course_value = string
 subject_codes = []
 # SQL生成用の文字列
 table = 'INSERT INTO `LAA1138458-subjectsdata`.'
-faculty = '`'+ value_to_name[target_course_value] +'`'
+faculty = '`'+ value_to_name[target_course_value] + target_year + '`'
 column = '(`code`, `semester`, `name`, `registers`, `a`, `b`, `c`, `d`, `f`, `get_point`) VALUES '
 
 driver = webdriver.Safari()
@@ -88,12 +88,12 @@ try:
                 print('New SQL file.')
                 with open(os.path.dirname(__file__)+'/SQL/'+target_year+'/'+value_to_name[target_course_value]+target_year+'.txt', 'w') as f:
                     values = "('"+subject_code+"','"+semester+"','"+subject_name+"','"+subject_registers+"','"+subject_a+"','"+subject_b+"','"+subject_c+"','"+subject_d+"','"+subject_f+"','"+subject_get_point+"');"
-                    f.write(table+faculty+column + values + '\n')
+                    f.write(table + faculty + column + values + '\n')
             else:
                 # ファイルがあれば追記
                 with open(os.path.dirname(__file__)+'/SQL/'+target_year+'/'+value_to_name[target_course_value]+target_year+'.txt', 'a') as f:
                     values = "('"+subject_code+"','"+semester+"','"+subject_name+"','"+subject_registers+"','"+subject_a+"','"+subject_b+"','"+subject_c+"','"+subject_d+"','"+subject_f+"','"+subject_get_point+"');"
-                    f.write(table+faculty+ column + values + '\n')
+                    f.write(table + faculty + column + values + '\n')
         # 次ページへ移る
         # 最初のページの場合
         if page == 1:
@@ -129,7 +129,7 @@ try:
             # 取得したデータを用いてSQL書き込み
             with open(os.path.dirname(__file__)+'/SQL/'+target_year+'/'+value_to_name[target_course_value]+target_year+'.txt', 'a') as f:
                     values = "('"+subject_code+"','"+semester+"','"+subject_name+"','"+subject_registers+"','"+subject_a+"','"+subject_b+"','"+subject_c+"','"+subject_d+"','"+subject_f+"','"+subject_get_point+"');"
-                    f.write(table+faculty+ column + values + '\n')
+                    f.write(table + faculty + column + values + '\n')
 except NoSuchElementException:
     print('No such element.')
 finally:
