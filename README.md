@@ -1,10 +1,10 @@
 # scraping_dsubjects
-This repository is for scraping datas about subjects in Doshisha Univ.
+## 概要
+同志社大学が提供する授業科目データ提示サイトからスクレイピングを行うためのプログラムです。  
+スクレイピング対象とするデータは以下です。  
 
-## Caution:
-Although it's possible to get datas from Doshisah web pages, these programs has not been completed yet. So, please take care about using it.
+- 科目名
+- 科目ID
+- 科目成績
 
-## How to use these.
-Running SubjectCode/SubjectCode.py allows you to get only codes of subjects in Doshisha.
-
-Running SubjectData/SubjectData.py allows you to get datas, which include in subject code, subject name, semester, teacher name, how many people have registered a subject.
+別リポジトリにあるDoSearchと接続するデータベースに記録するために、取得したデータはSQL文に組み込みテキストファイルに保存します。
